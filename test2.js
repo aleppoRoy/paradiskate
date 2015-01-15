@@ -3,7 +3,7 @@ var application_root = __dirname,
     path = require("path"),
     mongoose = require('mongoose');
 
-var app = express.createServer();
+var app = express();
 
 // Database
 var connection_string = 'mongodb://localhost/mydb';
@@ -103,5 +103,7 @@ app.get('/api', function (req, res) {
 });
 
 // Launch server
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
+var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 
-app.listen(80);
+app.listen(server_port,server_ip_address);
