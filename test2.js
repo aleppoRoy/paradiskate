@@ -25,6 +25,8 @@ app.configure(function () {
   app.use(express.static(path.join(application_root, "public")));
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
+
+//models
 var Schema = mongoose.Schema;  
 
 var Product = new Schema({  
@@ -43,6 +45,8 @@ var utilisateur = new Schema({
 });
 
 var utilisateurModel = mongoose.model('utilisateur', utilisateur);  
+//routing
+
  
 app.get('/api/products', function (req, res){
   return ProductModel.find(function (err, products) {
