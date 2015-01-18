@@ -2,8 +2,9 @@ var application_root = __dirname,
     express = require("express"),
     path = require("path"),
     mongoose = require('mongoose');
-
 var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
 // Database
 var connection_string = 'mongodb://localhost/mydb';
@@ -107,7 +108,30 @@ app.get('/api', function (req, res) {
 });
 
 // Launch server
+
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
-
-app.listen(server_port,server_ip_address);
+io.on('connection', function(socket){
+  console.log('a user connected');
+   socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+  socket.on('chat message', function(produit){
+		console.log(produit);
+	  var product;
+	  console.log("POST: ");
+	  console.log(produit);
+	  product = new ProductModel(produit);
+	  product.save(function (err) {
+		if (!err) {
+		  return console.log("created");
+		} else {
+		  return console.log(err);
+		}
+	  });
+		io.emit('chat message', produit);
+  });
+});
+http.listen(server_port,server_ip_address,function(){
+  console.log('listening on *:8080');
+});

@@ -10,12 +10,21 @@ paradisApp.controller('paradisCtrl', function ($scope) {
   ];
   $scope.scpStockerNom = function(){
 	console.log($scope.nom, $scope.email);
-	jQuery.post("/api/products", {
+	var socket = io();
+	socket.emit('chat message',{
+	  "title": $scope.nom,  
+	  "description": $scope.email,  
+	  "style": $scope.email
+	} );
+	/*jQuery.post("/api/products", {
 	  "title": $scope.nom,  
 	  "description": $scope.email,  
 	  "style": $scope.email
 	}, function (data, textStatus, jqXHR) { 
 		console.log("Post resposne:"); console.dir(data); console.log(textStatus); console.dir(jqXHR); 
-	});
+	});*/
 	}
+	/*socket.on('chat message', function(msg){
+	$scope.phones.push({"name":msg});
+	});*/
 });
