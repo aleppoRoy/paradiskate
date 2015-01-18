@@ -117,10 +117,7 @@ io.on('connection', function(socket){
     console.log('user disconnected');
   });
   socket.on('chat message', function(produit){
-		console.log(produit);
 	  var product;
-	  console.log("POST: ");
-	  console.log(produit);
 	  product = new ProductModel(produit);
 	  product.save(function (err) {
 		if (!err) {
