@@ -1,30 +1,21 @@
 var paradisApp = angular.module('paradis', []);
 paradisApp.controller('paradisCtrl', function ($scope) {
-  $scope.phones = [
-    {'name': 'Nexus S',
-     'snippet': 'Fast just got faster with Nexus S.'},
-    {'name': 'Motorola XOOM™ with Wi-Fi',
-     'snippet': 'The Next, Next Generation tablet.'},
-    {'name': 'MOTOROLA XOOM™',
-     'snippet': 'The Next, Next Generation tablet.'}
-  ];
+  $scope.saisie=true;
+  $scope.attache={"ligne1":"Join the community","ligne2":"Exciting news coming soon","ligne3":"Get registered to be the first informed"};
   $scope.scpStockerNom = function(){
 	console.log($scope.nom, $scope.email);
 	var socket = io();
-	socket.emit('chat message',{
+	socket.emit('registration',{
 	  "title": $scope.nom,  
 	  "description": $scope.email,  
 	  "style": $scope.email
 	} );
-	/*jQuery.post("/api/products", {
-	  "title": $scope.nom,  
-	  "description": $scope.email,  
-	  "style": $scope.email
-	}, function (data, textStatus, jqXHR) { 
-		console.log("Post resposne:"); console.dir(data); console.log(textStatus); console.dir(jqXHR); 
-	});*/
 	}
-	/*socket.on('chat message', function(msg){
-	$scope.phones.push({"name":msg});
-	});*/
+	socket.on('registration', function(msg){
+	$scope.$apply(function(){
+		$scope.attache.ligne2="bienvenu a toi "+ msg.title;
+		$scope.attache.ligne3="";
+		$scope.saisie=false;
+	});
+	});
 });

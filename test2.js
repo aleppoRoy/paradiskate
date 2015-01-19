@@ -31,17 +31,18 @@ app.configure(function () {
 var Schema = mongoose.Schema;  
 
 var Product = new Schema({  
-    title: { type: String, required: true },  
-    description: { type: String, required: true },  
-    style: { type: String, unique: true },  
+    title: { type: String},  
+    description: { type: String},  
+    style: { type: String},  
     modified: { type: Date, default: Date.now }
 });
 
 var ProductModel = mongoose.model('Product', Product); 
 
 var utilisateur = new Schema({  
-    nom: { type: String, required: true },  
-    email: { type: String, required: true },   
+    nom: { type: String},  
+    email: { type: String},  
+	nbvisite: { type: Number},	
     modified: { type: Date, default: Date.now }
 });
 
@@ -113,13 +114,22 @@ var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 io.on('connection', function(socket){
 	var address = socket.handshake.address;
-	var cookies = socket.handshake.headers;
+	var user;
+	user = new utilisateurModel({"nbvisite":1});
+	user.save(function (err) {
+		if (!err) {
+		  return console.log("created");
+		} else {
+		  return console.log(err);
+		}
+	});
+	var cookies = JSON.stringify(socket.handshake.headers);
 	console.log('voici les cookies que je peux voir:' + cookies);
-  	console.log('a user connected from'+address);
+  	console.log('a user connected from '+address);
    	socket.on('disconnect', function(){
     		console.log('user disconnected');
   	});
-  	socket.on('chat message', function(produit){
+  	socket.on('registration', function(produit){
 	  	var product;
 	  	product = new ProductModel(produit);
 	  	product.save(function (err) {
@@ -129,7 +139,7 @@ io.on('connection', function(socket){
 			  return console.log(err);
 			}
 	  	});
-		io.emit('chat message', produit);
+		io.emit('r', produit);
   	});
 });
 http.listen(server_port,server_ip_address,function(){
