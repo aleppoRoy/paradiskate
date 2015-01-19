@@ -139,7 +139,7 @@ io.on('connection', function(socket){
 			  return console.log(err);
 			}
 	  	});
-		io.emit('r', produit);
+		io.emit('registration', produit);
   	});
 });
 http.listen(server_port,server_ip_address,function(){

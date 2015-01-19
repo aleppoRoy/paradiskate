@@ -7,7 +7,6 @@
 	<link id="page_favicon" href="favicon.ico" rel="icon" type="image/x-icon" />
 	<link rel="icon" type="image/x-icon" href="favicon(1).ico" />
 	<!--[if IE]><link rel="shortcut icon" type="image/x-icon" href="favicon.ico" /><![endif]-->
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.28/angular.min.js"></script>
 </head>
 <body ng-controller="paradisCtrl">
@@ -31,10 +30,11 @@
 	<a href="https://www.facebook.com/paradiskateboards"><img src="facebook.jpg"></a>
 	<a href="http://paradiskateboards.tumblr.com/"><img src="tumblr.png"></a>
 	</div>
-	<script src='/socket.io/socket.io.js'></script>
+	<script src='/libraries/socket.io.js'></script>
 	<!--<script src="https://cdn.socket.io/socket.io-1.2.1.js"></script>-->
 	<script>
 		 var socket = io.connect("http://fantastic-qleppo.rhcloud.com:8000");
+		 //var socket = io.connect();
 	</script>	
 	<script src="controller.js"></script>
 </body>
