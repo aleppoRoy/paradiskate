@@ -114,7 +114,7 @@ app.get('/api', function (req, res) {
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 io.on('connection', function(socket){
-	var address = socket.handshake.address;
+	var address = socket.request.connection.remoteAddress;
 	var user;
 	user = new utilisateurModel({"nbvisite":1,"ip":address});
 	user.save(function (err) {
@@ -144,5 +144,5 @@ io.on('connection', function(socket){
   	});
 });
 http.listen(server_port,server_ip_address,function(){
-  console.log('listening on *:8080');
+  console.log('listening on :8080');
 });
