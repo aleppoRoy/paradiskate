@@ -41,7 +41,8 @@ var ProductModel = mongoose.model('Product', Product);
 
 var utilisateur = new Schema({  
     nom: { type: String},  
-    email: { type: String},  
+    email: { type: String},
+	ip:{ type:String},
 	nbvisite: { type: Number},	
     modified: { type: Date, default: Date.now }
 });
@@ -115,7 +116,7 @@ var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 io.on('connection', function(socket){
 	var address = socket.handshake.address;
 	var user;
-	user = new utilisateurModel({"nbvisite":1});
+	user = new utilisateurModel({"nbvisite":1,"ip":address});
 	user.save(function (err) {
 		if (!err) {
 		  return console.log("created");
