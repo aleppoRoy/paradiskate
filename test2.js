@@ -113,22 +113,24 @@ var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 io.on('connection', function(socket){
 	var address = socket.handshake.address;
-  console.log('a user connected from'+address);
-   socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-  socket.on('chat message', function(produit){
-	  var product;
-	  product = new ProductModel(produit);
-	  product.save(function (err) {
-		if (!err) {
-		  return console.log("created");
-		} else {
-		  return console.log(err);
-		}
-	  });
+	var cookies = socket.handshake.headers;
+	console.log('voici les cookies que je peux voir:' + cookies);
+  	console.log('a user connected from'+address);
+   	socket.on('disconnect', function(){
+    		console.log('user disconnected');
+  	});
+  	socket.on('chat message', function(produit){
+	  	var product;
+	  	product = new ProductModel(produit);
+	  	product.save(function (err) {
+			if (!err) {
+			  return console.log("created");
+			} else {
+			  return console.log(err);
+			}
+	  	});
 		io.emit('chat message', produit);
-  });
+  	});
 });
 http.listen(server_port,server_ip_address,function(){
   console.log('listening on *:8080');
