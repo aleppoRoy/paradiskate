@@ -114,7 +114,7 @@ app.get('/api', function (req, res) {
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 io.on('connection', function(socket){
-	var address = socket.request.connection.remoteAddress;
+	var address = socket.request.socket.remoteAddress;;
 	var user;
 	user = new utilisateurModel({"nbvisite":1,"ip":address});
 	user.save(function (err) {
