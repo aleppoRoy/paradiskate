@@ -53,9 +53,10 @@ var utilisateur = new Schema({
 var utilisateurModel = mongoose.model('utilisateur', utilisateur);  
 //routing
 app.post('/upload', function(req, res) {
-    var tempfile    = req.files.filename.path;
-    var origname    = req.files.filename.name;
-    var writestream = gfs.createWriteStream({ filename: origname });
+   var tempfile    = req.files.userPhoto.path;
+    var origname    = req.files.userPhoto.name;
+	console.log(JSON.stringify(req.files));
+    var writestream = gfs.createWriteStream({ userPhoto: origname });
     // open a stream to the temporary file created by Express...
     fs.createReadStream(tempfile)
       .on('end', function() {
