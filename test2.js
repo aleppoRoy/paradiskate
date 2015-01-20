@@ -2,6 +2,8 @@ var application_root = __dirname,
     express = require("express"),
     path = require("path"),
     mongoose = require('mongoose');
+var fs      = require('fs');
+var Grid    = require('gridfs-stream');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -16,7 +18,8 @@ if(process.env.OPENSHIFT_MONGODB_DB_PASSWORD){
   process.env.OPENSHIFT_APP_NAME;
 }
 mongoose.connect(connection_string);
-
+var db = mongoose.connection.db;
+var gfs = Grid(db, mongoose.mongo);
 // Config
 
 app.configure(function () {
@@ -49,7 +52,30 @@ var utilisateur = new Schema({
 
 var utilisateurModel = mongoose.model('utilisateur', utilisateur);  
 //routing
+app.post('/upload', function(req, res) {
+    var tempfile    = req.files.filename.path;
+    var origname    = req.files.filename.name;
+    var writestream = gfs.createWriteStream({ filename: origname });
+    // open a stream to the temporary file created by Express...
+    fs.createReadStream(tempfile)
+      .on('end', function() {
+        res.send('OK');
+      })
+      .on('error', function() {
+        res.send('ERR');
+      })
+      // and pipe it to gfs
+      .pipe(writestream);
+});
 
+app.get('/download', function(req, res) {
+    // TODO: set proper mime type + filename, handle errors, etc...
+    gfs
+      // create a read stream from gfs...
+      .createReadStream({ filename: req.param('filename') })
+      // and pipe it to Express' response
+      .pipe(res);
+});
  
 app.get('/api/products', function (req, res){
   return ProductModel.find(function (err, products) {
