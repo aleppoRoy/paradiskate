@@ -24,6 +24,8 @@ var gfs = Grid(db, mongoose.mongo);
 
 app.configure(function () {
   app.use(express.bodyParser());
+  app.use(express.cookieParser());
+  app.use(express.session({secret: '1234567890QWERTY'}));
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(path.join(application_root, "public")));
@@ -133,6 +135,7 @@ app.post('/api/utilisateurs', function (req, res){
 });
 
 app.get('/api', function (req, res) {
+req.session.lastPage = '/api';
   res.send('Ecomm API is running');
 });
 
