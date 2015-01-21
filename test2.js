@@ -7,6 +7,7 @@ var Grid    = require('gridfs-stream');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var MongoStore = require('connect-mongo')(express);
 
 // Database
 var connection_string = 'mongodb://localhost/mydb';
@@ -25,7 +26,11 @@ var gfs = Grid(db, mongoose.mongo);
 app.configure(function () {
   app.use(express.bodyParser());
   app.use(express.cookieParser());
-  app.use(express.session({secret: '1234567890QWERTY'}));
+  app.use(express.session({
+  	  store: new MongoStore({
+  	  	url: connection_string
+	 }),
+  	secret: '1234567890QWERTY'}));
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(path.join(application_root, "public")));
