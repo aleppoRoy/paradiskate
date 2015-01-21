@@ -56,7 +56,7 @@ app.post('/upload', function(req, res) {
    var tempfile    = req.files.userPhoto.path;
     var origname    = req.files.userPhoto.name;
 	console.log(JSON.stringify(req.files));
-    var writestream = gfs.createWriteStream({ userPhoto: origname });
+    var writestream = gfs.createWriteStream({ filename: origname });
     // open a stream to the temporary file created by Express...
     fs.createReadStream(tempfile)
       .on('end', function() {
@@ -143,6 +143,8 @@ var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 io.on('connection', function(socket){
 	var address = socket.request.socket.remoteAddress;;
 	var user;
+	console.log('voici les cookies que je peux voir:' + cookies);
+  	console.log('a user connected from '+address);
 	user = new utilisateurModel({"nbvisite":1,"ip":address});
 	user.save(function (err) {
 		if (!err) {
@@ -152,8 +154,6 @@ io.on('connection', function(socket){
 		}
 	});
 	var cookies = JSON.stringify(socket.handshake.headers);
-	console.log('voici les cookies que je peux voir:' + cookies);
-  	console.log('a user connected from '+address);
    	socket.on('disconnect', function(){
     		console.log('user disconnected');
   	});
@@ -171,5 +171,5 @@ io.on('connection', function(socket){
   	});
 });
 http.listen(server_port,server_ip_address,function(){
-  console.log('listening on :8080');
+  console.log('listening on' + server_port);
 });
