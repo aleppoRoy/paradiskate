@@ -2,6 +2,7 @@ var application_root = __dirname,
     express = require("express"),
     path = require("path"),
     mongoose = require('mongoose');
+var request = require('request');
 var fs      = require('fs');
 var Grid    = require('gridfs-stream');
 var app = express();
@@ -75,9 +76,14 @@ app.post('/upload', function(req, res) {
       // and pipe it to gfs
       .pipe(writestream);
 });
-
+app.get('/test', function(req, res){
+	console.log("coucou");
+	res.send({"title":"dede"});
+  //req.pipe(request('http://paradiskateboards.com/tumblr.png')).pipe(res);
+});
 app.get('/download', function(req, res) {
     // TODO: set proper mime type + filename, handle errors, etc...
+	console.log(req.body);
     gfs
       // create a read stream from gfs...
       .createReadStream({ filename: req.param('filename') })
@@ -140,6 +146,9 @@ app.post('/api/utilisateurs', function (req, res){
 });
 
 app.get('/api', function (req, res) {
+console.log(req);
+var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
+console.log(ip);
 req.session.lastPage = '/api';
   res.send('Ecomm API is running');
 });
@@ -149,8 +158,10 @@ req.session.lastPage = '/api';
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 io.on('connection', function(socket){
+	console.log(socket);
 	var address = socket.request.socket.remoteAddress;;
 	var user;
+	var cookies = JSON.stringify(socket.handshake.headers);
 	console.log('voici les cookies que je peux voir:' + cookies);
   	console.log('a user connected from '+address);
 	user = new utilisateurModel({"nbvisite":1,"ip":address});
@@ -161,7 +172,6 @@ io.on('connection', function(socket){
 		  return console.log(err);
 		}
 	});
-	var cookies = JSON.stringify(socket.handshake.headers);
    	socket.on('disconnect', function(){
     		console.log('user disconnected');
   	});
