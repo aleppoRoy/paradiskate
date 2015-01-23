@@ -1,6 +1,7 @@
 var paradisApp = angular.module('paradis', []);
 paradisApp.controller('paradisCtrl', function ($scope,socket,$http) {
 	$scope.saisie=true;
+	$scope.users= new Array();
 	$scope.attache={"ligne1":"Join the community","ligne2":"Exciting news coming soon","ligne3":"Get registered to be the first informed"};
 	$scope.scpStockerNom = function(){
 		console.log($scope.nom, $scope.email);
@@ -18,7 +19,7 @@ paradisApp.controller('paradisCtrl', function ($scope,socket,$http) {
 		// called asynchronously if an error occurs
 		// or server returns response with an error status.
 		console.log(data,status,headers,config);
-		});
+		});*/
 		socket.emit('registration',{
 		"title": $scope.nom,  
 		"description": $scope.email,  
@@ -28,7 +29,10 @@ paradisApp.controller('paradisCtrl', function ($scope,socket,$http) {
 			$scope.saisie=false;
 			$scope.attache.ligne2="bienvenu a toi "+ data.title;
 			$scope.attache.ligne3="";
-		});*/
+		});
+		socket.on('autres users', function (data) {
+			$scope.users.push(data);
+		});/*
 		$http.get('/download',{'filename':'tumblr.png'}).
 		success(function(data, status, headers, config) {
 		// this callback will be called asynchronously
@@ -39,7 +43,7 @@ paradisApp.controller('paradisCtrl', function ($scope,socket,$http) {
 		// called asynchronously if an error occurs
 		// or server returns response with an error status.
 		console.log(data,status,headers,config);
-		});;
+		});/*
 		/*var socket = io();
 		socket.emit('registration',{
 		  "title": $scope.nom,  
