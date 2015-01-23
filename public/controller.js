@@ -30,7 +30,7 @@ paradisApp.controller('paradisCtrl', function ($scope,socket,$http) {
 			$scope.attache.ligne2="bienvenu a toi "+ data.title;
 			$scope.attache.ligne3="";
 		});
-		socket.on('autres users', function (data) {
+		socket.on('les autres', function (data) {
 			$scope.users.push(data);
 		});/*
 		$http.get('/download',{'filename':'tumblr.png'}).
