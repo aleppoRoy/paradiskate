@@ -147,6 +147,16 @@ app.post('/api/utilisateurs', function (req, res){
 
 app.get('/api', function (req, res) {
 console.log(req);
+var stream=utilisateurModel.find().stream();
+	stream.on('data', function (doc) {
+	  res.write(doc)
+	})
+	stream.on('error', function (err) {
+	  // handle err
+	})
+	stream.on('close', function () {
+	  // all done
+	})
 var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 console.log(ip);
 req.session.lastPage = '/api';
@@ -185,6 +195,16 @@ io.on('connection', function(socket){
 			  return console.log(err);
 			}
 	  	});
+		var stream=utilisateurModel.find().stream();
+			stream.on('data', function (doc) {
+			  io.emit('les autres',doc);
+			})
+			stream.on('error', function (err) {
+			  // handle err
+			})
+			stream.on('close', function () {
+			  // all done
+			})
 		io.emit('registration', produit);
   	});
 });
