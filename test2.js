@@ -156,6 +156,7 @@ var stream=utilisateurModel.find().stream();
 	})
 	stream.on('close', function () {
 	  // all done
+	  rex.end();
 	})
 var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 console.log(ip);
