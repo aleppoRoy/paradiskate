@@ -76,21 +76,35 @@ app.post('/upload', function(req, res) {
       // and pipe it to gfs
       .pipe(writestream);
 });
-app.get('/test', function(req, res){
-	console.log("coucou");
-	res.send({"title":"dede"});
-  //req.pipe(request('http://paradiskateboards.com/tumblr.png')).pipe(res);
+app.get('/test/:filename', function(req, res){
+	//res.send({"title":"dede"});
+	req.params.filename
+	var chunks=[];
+	console.log(req.params.filename);
+	gfs.createReadStream({ filename:req.params.filename})
+		  // and pipe it to Express' response
+		  .on('data', function(data){
+		  chunks.push(data);
+		  })
+		  .on("end",function(){
+		  var fbuf = Buffer.concat(chunks);
+			res.set('Content-Type', 'text/html');
+			var base64 = (fbuf.toString('base64'));
+			res.send(base64);
+		  })
+});
+app.get('/mesimages', function(req, res){
+	//res.send({"title":"dede"});
+	gfs.files.find().toArray(function (err, files) {
+    res.send(files);
+  })
 });
 app.get('/download', function(req, res) {
-    // TODO: set proper mime type + filename, handle errors, etc...
-	console.log(req.body);
-    gfs
-      // create a read stream from gfs...
-      .createReadStream({ filename: req.param('filename') })
+    // TODO: set proper mime type + filename, handle errors, etc...    
+	gfs.createReadStream({ filename:"IMGP8043.JPG"})
       // and pipe it to Express' response
       .pipe(res);
 });
- 
 app.get('/api/products', function (req, res){
   return ProductModel.find(function (err, products) {
     if (!err) {
@@ -147,23 +161,26 @@ app.post('/api/utilisateurs', function (req, res){
 
 app.get('/api', function (req, res) {
 console.log(req);
-var stream=utilisateurModel.find().stream();
-	stream.on('data', function (doc) {
-	  res.write(doc)
+	var stream=utilisateurModel.find().stream({transform: JSON.stringify}).pipe(res);
+	/*stream.on('data', function (doc) {
+	console.log(doc);
+		res.send(doc);
+	  //res.send(doc);
+	  //res.end();
 	})
 	stream.on('error', function (err) {
+		//res.write(err);
 	  // handle err
 	})
 	stream.on('close', function () {
 	  // all done
-	  rex.end();
-	})
+	  res.end();
+	})*/
 var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
 console.log(ip);
 req.session.lastPage = '/api';
-  res.send('Ecomm API is running');
-});
-
+  //res.send('Ecomm API is running');
+}); 
 // Launch server
 
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
@@ -207,6 +224,10 @@ io.on('connection', function(socket){
 			  // all done
 			})
 		io.emit('registration', produit);
+		var stream=gfs.createReadStream({ filename:"IMGP8043.JPG"});
+		stream.on('data',function(doc){
+		io.emit('pub', JSON.stringify(doc));
+		});
   	});
 });
 http.listen(server_port,server_ip_address,function(){
