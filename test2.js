@@ -26,7 +26,7 @@ var gfs = Grid(db, mongoose.mongo);
 
 app.configure(function () {
   app.use(express.bodyParser());
-  app.use(express.cookieParser());
+  app.use(express.cookieParser('coucouille'));
   app.use(express.session({
   	  store: new MongoStore({
   	  	url: connection_string
@@ -38,13 +38,15 @@ app.configure(function () {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
+
 //models
 var Schema = mongoose.Schema;  
 
 var Product = new Schema({  
     title: { type: String},  
     description: { type: String},  
-    style: { type: String},  
+    style: { type: String},
+	temps:{ type: Date, default: Date.now },
     modified: { type: Date, default: Date.now }
 });
 
@@ -58,8 +60,52 @@ var utilisateur = new Schema({
     modified: { type: Date, default: Date.now }
 });
 
-var utilisateurModel = mongoose.model('utilisateur', utilisateur);  
+var utilisateurModel = mongoose.model('utilisateur', utilisateur);
+  
+var cible =new Schema({  
+    latitude: { type: Number},  
+    longitude: { type: Number},
+	nbplanche:{ type:Number},
+	email: {type: String},	
+	heure:{type: Date},	
+    modified: { type: Date, default: Date.now }
+});
+
+var cibleModel = mongoose.model('cible', cible);  
 //routing
+app.get('/', function(req, res){
+	console.log(req.ip);
+	user = new utilisateurModel({"nbvisite":1,"ip":req.ip});
+	user.save(function (err) {
+		if (!err) {
+		  return console.log("created");
+		} else {
+		  return console.log(err);
+		}
+	});
+	console.log('cookies',req.cookies);
+	req.session.lastPage = '/';
+	var minute = 60 * 1000000;
+	if(req.cookies.foot==1){
+	res.cookie('skateboard', 1, { maxAge: minute });
+		res.send('toi tu as ete sur ce site');	
+	} else {
+	res.redirect('/index.html');
+	}
+});
+
+app.get('/forget', function(req, res){
+  res.clearCookie('remember');
+  res.redirect('back');
+});
+
+app.post('/', function(req, res){
+  var minute = 60 * 1000;
+  if (req.body.remember){
+  res.cookie('remember', 1, { maxAge: minute });
+  res.redirect('back');
+  }
+});
 app.post('/upload', function(req, res) {
    var tempfile    = req.files.userPhoto.path;
     var origname    = req.files.userPhoto.name;
@@ -93,8 +139,10 @@ app.get('/test/:filename', function(req, res){
 			res.send(base64);
 		  })
 });
+app.get('/test', function(req, res){
+	res.send({'data':req.user});
+});
 app.get('/mesimages', function(req, res){
-	//res.send({"title":"dede"});
 	gfs.files.find().toArray(function (err, files) {
     res.send(files);
   })
@@ -125,8 +173,6 @@ app.get('/api/utilisateurs', function (req, res){
 });
 app.post('/api/products', function (req, res){
   var product;
-  console.log("POST: ");
-  console.log(req.body);
   product = new ProductModel({
     title: req.body.title,
     description: req.body.description,
@@ -143,8 +189,6 @@ app.post('/api/products', function (req, res){
 });
 app.post('/api/utilisateurs', function (req, res){
   var utilisateur;
-  console.log("POST: ");
-  console.log(req.body);
   utilisateur = new utilisateurModel({
     nom: req.body.nom,
     email: req.body.email,
@@ -158,9 +202,31 @@ app.post('/api/utilisateurs', function (req, res){
   });
   return res.send(utilisateur);
 });
+app.post('/api/cibles', function (req, res){
+  var cible;
+  cible = new cibleModel({
+    latitude: req.body.latitude,  
+    longitude:req.body.longitude,
+	nbplanche:req.body.nbplanche,
+	email: req.body.email,	
+	heure:req.body.heure
+  });
+  cible.save(function (err) {
+    if (!err) {
+      return console.log("created");
+    } else {
+      return console.log(err);
+    }
+  });
+  return res.send(utilisateur);
+});
 
 app.get('/api', function (req, res) {
-console.log(req);
+console.log(req.session);
+console.log(req.cookies);
+var minute = 60 * 1000000;
+res.cookie('foot', 1, { maxAge: minute });
+req.session.lastPage = '/api';
 	var stream=utilisateurModel.find().stream({transform: JSON.stringify}).pipe(res);
 	/*stream.on('data', function (doc) {
 	console.log(doc);
@@ -177,8 +243,7 @@ console.log(req);
 	  res.end();
 	})*/
 var ip = req.header('x-forwarded-for') || req.connection.remoteAddress;
-console.log(ip);
-req.session.lastPage = '/api';
+
   //res.send('Ecomm API is running');
 }); 
 // Launch server
@@ -186,10 +251,9 @@ req.session.lastPage = '/api';
 var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
 var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
 io.on('connection', function(socket){
-	console.log(socket);
 	var address = socket.request.socket.remoteAddress;;
 	var user;
-	var cookies = JSON.stringify(socket.handshake.headers);
+	var cookies = JSON.stringify(socket.handshake.headers.cookie);
 	console.log('voici les cookies que je peux voir:' + cookies);
   	console.log('a user connected from '+address);
 	user = new utilisateurModel({"nbvisite":1,"ip":address});

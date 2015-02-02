@@ -1,19 +1,19 @@
-var paradisApp = angular.module('paradis', []);
-paradisApp.controller('paradisCtrl', function ($scope,socket,$http) {
+var paradisApp = angular.module('paradis', ['ngCookies']);
+paradisApp.controller('paradisCtrl', function ($scope,socket,$http,$cookies) {
+	console.log($cookies);
 	$scope.saisie=true;
 	$scope.users= new Array();
 	$scope.hash="boutonpetit.jpg";
 	$scope.attache={"ligne1":"Join the community","ligne2":"Exciting news coming soon","ligne3":"Get registered to be the first informed"};
 	$scope.scpStockerNom = function(){
 		console.log($scope.nom, $scope.email);
-		$http.get('/test').
+		$http.get('/test',{'user':$scope.nom}).
 		success(function(data, status, headers, config) {
 		// this callback will be called asynchronously
 		// when the response is available/*
 		console.log("data",data,"status",status,"headers",headers,"config",config);
-		$scope.hash= "data:image/jpeg;base64,"+data;
-		console.log($scope.hash);
 		$scope.attache.ligne3="";
+		$scope.attache.ligne2=config.user;
 		$scope.saisie=false;
 		}).
 		error(function(data, status, headers, config) {

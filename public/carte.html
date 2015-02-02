@@ -3,8 +3,10 @@
 <head>
 	<meta charset=utf-8 content="0; URL='http://paradiskateboards.com/homepage'"/>
 	<title>paradiskateboards</title>
+	<link id="page_favicon" href="favicon.ico" rel="icon" type="image/x-icon" />
+	<link rel="icon" type="image/x-icon" href="favicon(1).ico" />
     <style type="text/css">
-      html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+      html, body, #map-canvas { height: 100%; margin: 0; padding: 0;} #recherche{position :absolute; top:30px; left: 15px;}
     </style>
     <script type="text/javascript"
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCeOgjHGLyCygMFzBPoRBo2yJ7gzn6rLKQ">
@@ -15,7 +17,12 @@
 	<link id="page_favicon" href="favicon.ico" rel="icon" type="image/x-icon" />
 	<link rel="icon" type="image/x-icon" href="favicon(1).ico" />
 </head>
-<body>
-	<div id="map-canvas"></div>		
+<body>	
+	<div id="map-canvas"></div>	
+	<div id="recherche">
+		<input id="adress" type="texte" name="adress" placeholder="Address"></input>
+		<input id="rechercher" type="submit" onclick="scpRechercherAdresse()"value="OK">	
+		<input id="cible" type="submit" onclick="scpCiblerAdresse()"value="cibler">
+	</div>
 </body>
 </html>

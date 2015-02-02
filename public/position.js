@@ -132,8 +132,7 @@ function attachSecretMessage(marker, num) {
     infowindow.open(marker.get('map'), marker);
   });
 }
-
-function maPosition(position) {
+  function maPosition(position) {
 	var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 	 
 		// Ajout d'un marqueur à la position trouvée
@@ -143,62 +142,6 @@ function maPosition(position) {
 		  title:"Vous êtes ici"
 		});
 	map.panTo(latlng);
-}
-
-function scpRechercherAdresse(){
-  var address = document.getElementById('adress').value;
-  geocoder.geocode( { 'address': address}, function(results, status) {
-    if (status == google.maps.GeocoderStatus.OK) {
-      map.setCenter(results[0].geometry.location);
-      var marker = new google.maps.Marker({
-          map: map,
-          position: results[0].geometry.location
-      });
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
-
-function scpCiblerAdresse(){
-	var address = document.getElementById('adress').value;
-	geocoder.geocode( { 'address': address}, function(results, status) {
-		if (status == google.maps.GeocoderStatus.OK) {
-			map.setCenter(results[0].geometry.location);
-			var image = {
-			url: 'tumblr.png',
-			// This marker is 20 pixels wide by 32 pixels tall.
-			size: new google.maps.Size(24, 24),
-			// The origin for this image is 0,0.
-			origin: new google.maps.Point(0,0),
-			// The anchor for this image is the base of the flagpole at 0,32.
-			anchor: new google.maps.Point(-24, 24)
-			};
-			var shape = {
-			coords: [1, 1, 1, 20, 18, 20, 18 , 1],
-			type: 'poly'
-			};
-			  var infowindow = new google.maps.InfoWindow({
-				content: '<h3>nombre de skateboard</h3>'+
-						'<h3>adresse email </h3><input id="email" type="email">'+
-						'<h3>numero de telephone</h3><input id="tel" type="text">'+
-						'<h3>disponiblite</h3><input id=dispo type="datetime">'+
-						'<input id="envoyer" type="submit">'
-			  });
-			var marker = new google.maps.Marker({
-			  map: map,
-				icon: image,
-				shape: shape,
-			  position: results[0].geometry.location
-			});
-			infowindow.open(marker.get('map'), marker);
-			  google.maps.event.addListener(marker, 'click', function() {
-				infowindow.open(marker.get('map'), marker);
-			  });
-		} else {
-			alert('Geocode was not successful for the following reason: ' + status);
-		}
-	});
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);

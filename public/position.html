@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<meta charset=utf-8 content="0; URL='http://paradiskateboards.com/homepage'"/>
+	<title>paradiskateboards</title>
+    <style type="text/css">
+      html, body, #map { height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCeOgjHGLyCygMFzBPoRBo2yJ7gzn6rLKQ">
+    </script>
+	<link id="page_favicon" href="favicon.ico" rel="icon" type="image/x-icon" />
+	<link rel="icon" type="image/x-icon" href="favicon(1).ico" />
+</head>
+<body>
+	<div id="map"></div>	
+<script>
+var map;
+function maPosition(position) {
+// .. et la variable qui va stocker les coordonnées
+    // Un nouvel objet LatLng pour Google Maps avec les paramètres de position
+    var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+    // Ajout d'un marqueur à la position trouvée
+    var marker = new google.maps.Marker({
+      position: latlng,
+      map : map,
+      title:"Vous êtes ici"
+    });
+    
+    // Permet de centrer la carte sur la position latlng
+    map.panTo(latlng);
+ 
+}
+function initialize() {
+// Position par défaut (Châtelet à Paris)
+var centerpos = new google.maps.LatLng(48.8989080,2.0937610);
+geocoder = new google.maps.Geocoder(); 
+// Options relatives à la carte
+var optionsGmaps = {
+    center:centerpos,
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    zoom: 15
+};
+// ROADMAP peut être remplacé par SATELLITE, HYBRID ou TERRAIN
+// Zoom : 0 = terre entière, 19 = au niveau de la rue
+ 
+// Initialisation de la carte pour l'élément portant l'id "map"
+	map = new google.maps.Map(document.getElementById("map"), optionsGmaps);
+	if(navigator.geolocation) {
+		survId = navigator.geolocation.getCurrentPosition(maPosition);
+	} else {
+		alert("Ce navigateur ne supporte pas la géolocalisation");
+	}
+}
+google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+<div id="infoposition"></div>
+</body>
+</html>
